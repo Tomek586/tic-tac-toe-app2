@@ -1,23 +1,28 @@
 "use client";
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/app/lib/firebase"; 
+import { auth } from "@/app/lib/firebase";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/lib/AuthContext"; // Importujemy useAuth
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const router = useRouter();
+  const { login } = useAuth(); // używamy login z AuthContext
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError(null);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/"); // Przekierowanie po zalogowaniu
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Logged in user:", userCredential.user); // Logowanie użytkownika w konsoli
+      login(userCredential.user); // Zaktualizowanie kontekstu z nowym użytkownikiem
+      router.push("/"); // Przekierowanie po udanym logowaniu
     } catch (err) {
       setError("Invalid email or password");
+      console.error(err); // Logowanie błędów w konsoli
     }
   };
 
