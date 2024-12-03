@@ -38,3 +38,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Ignorowanie plików środowiskowych
+.env
+.env.local
+.env.development
+.env.production
+.env.test

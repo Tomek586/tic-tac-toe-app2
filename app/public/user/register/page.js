@@ -1,23 +1,28 @@
 "use client";
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/app/lib/firebase"; // Skonfiguruj Firebase w `lib/firebase.js`
+import { auth } from "@/app/lib/firebase";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/lib/AuthContext";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError(null);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/(public)/user/signin"); // Przekierowanie po rejestracji
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("Registered user:", userCredential.user); // Logowanie użytkownika po rejestracji
+      login(userCredential.user);
+      router.push("/public/user/signin");
     } catch (err) {
       setError("Failed to create account. Please try again.");
+      console.error(err);
     }
   };
 
