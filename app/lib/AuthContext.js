@@ -71,6 +71,11 @@ export const AuthProvider = ({ children }) => {
 		return user ? user.emailVerified : false;
 	};
 
+	// Funkcja do pobierania UID użytkownika
+	const getUid = () => {
+		return user ? user.uid : null;
+	};
+
 	// Sprawdzamy, czy użytkownik jest zalogowany i czy ma zweryfikowany e-mail
 	useEffect(() => {
 		if (user && !user.emailVerified) {
@@ -91,6 +96,7 @@ export const AuthProvider = ({ children }) => {
 				logout,
 				register,
 				isEmailVerified,
+				getUid, // Dodajemy metodę getUid
 			}}
 		>
 			{children}

@@ -1,4 +1,3 @@
-// app/public/user/register/page.js
 "use client";
 import { useState } from "react";
 import { useAuth } from "@/app/lib/AuthContext";
@@ -13,25 +12,36 @@ const RegisterForm = () => {
 	const [error, setError] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 
+	const validateForm = () => {
+		if (!email || !password || !confirmPassword) {
+			setError("Wszystkie pola są wymagane.");
+			return false;
+		}
+		if (password.length < 6) {
+			setError("Hasło musi mieć co najmniej 6 znaków.");
+			return false;
+		}
+		if (password !== confirmPassword) {
+			setError("Hasła muszą się zgadzać.");
+			return false;
+		}
+		return true;
+	};
+
 	const onSubmit = async (e) => {
 		e.preventDefault();
-		setIsLoading(true);
 		setError("");
+		setIsLoading(true);
 
-		if (password !== confirmPassword) {
-			setError("Hasła muszą się zgadzać");
+		if (!validateForm()) {
 			setIsLoading(false);
 			return;
 		}
 
 		try {
-			// Rejestracja użytkownika
 			await register(email, password);
-
-			// Przekierowanie na stronę weryfikacji
 			router.push("/verify");
 		} catch (err) {
-			// Obsługuje błąd, jeśli email jest już w użyciu
 			if (
 				err.message ===
 				"Ten e-mail jest już zarejestrowany."
@@ -150,7 +160,11 @@ const RegisterForm = () => {
 					<button
 						type="submit"
 						disabled={isLoading}
-						className="w-full mt-4 p-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none"
+						className={`w-full mt-4 p-3 text-white font-semibold rounded-lg ${
+							isLoading
+								? "bg-gray-400 cursor-not-allowed"
+								: "bg-blue-500 hover:bg-blue-600"
+						}`}
 					>
 						{isLoading
 							? "Rejestracja..."

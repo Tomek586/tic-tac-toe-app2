@@ -3,6 +3,7 @@
 import React from "react";
 import { AuthProvider, useAuth } from "./lib/AuthContext";
 import "./globals.css";
+import Link from "next/link";
 
 export default function RootLayout({ children }) {
 	return (
@@ -36,31 +37,31 @@ function MainLayout({ children }) {
 					{/* Navigation Links */}
 					<ul className="flex flex-col mt-4 space-y-2 px-2">
 						<li>
-							<a
+							<Link
 								href="/"
 								className="block px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors"
 							>
 								Home
-							</a>
+							</Link>
 						</li>
 						{!user && (
 							<>
 								<li>
-									<a
+									<Link
 										href="/public/user/signin"
 										className="block px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors"
 									>
 										Sign
 										In
-									</a>
+									</Link>
 								</li>
 								<li>
-									<a
+									<Link
 										href="/public/user/register"
 										className="block px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors"
 									>
 										Register
-									</a>
+									</Link>
 								</li>
 							</>
 						)}
@@ -84,12 +85,28 @@ function MainLayout({ children }) {
 								</li>
 
 								<li>
-									<a
+									<Link
 										href="/protected/user/profile"
 										className="block px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors"
 									>
 										Profile
-									</a>
+									</Link>
+								</li>
+								<li>
+									<Link
+										href="/public/user/stats"
+										className="block px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors"
+									>
+										Statistics
+									</Link>
+								</li>
+								<li>
+									<Link
+										href="/public/user/game"
+										className="block px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors"
+									>
+										Game
+									</Link>
 								</li>
 							</>
 						)}

@@ -1,0 +1,32 @@
+.board-config {
+	margin-top: 20px;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.board-config label {
+	display: block;
+	margin-bottom: 10px;
+	font-size: 14px;
+}
+
+.board-config input {
+	margin-left: 10px;
+}
+
+.board-config h3 {
+	margin-bottom: 15px;
+	font-size: 18px;
+}
+
+.board-config input[type="number"] {
+	width: 60px;
+	padding: 4px;
+	margin-left: 10px;
+}
+
+.board-config input[type="number"]::-webkit-inner-spin-button,
+.board-config input[type="number"]::-webkit-outer-spin-button {
+	opacity: 1;
+}

@@ -2,9 +2,10 @@
 
 import { useAuth } from "@/app/lib/AuthContext";
 import { updateProfile } from "firebase/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "@/app/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import Footer from "@/app/components/Footer";
 
 export default function ProfileForm() {
 	const { user } = useAuth();
@@ -12,7 +13,96 @@ export default function ProfileForm() {
 		user?.displayName || ""
 	);
 	const [photoURL, setPhotoURL] = useState(user?.photoURL || "");
+	const [street, setStreet] = useState("");
+	const [city, setCity] = useState("");
+	const [zipCode, setZipCode] = useState("");
+	const [totalGames, setTotalGames] = useState(0);
+	const [wins, setWins] = useState(0);
+	const [losses, setLosses] = useState(0);
+	const [draws, setDraws] = useState(0);
 	const [error, setError] = useState("");
+
+	useEffect(() => {
+		const fetchData = async () => {
+			if (user) {
+				try {
+					// Pobierz dane użytkownika
+					const userDoc = await getDoc(
+						doc(
+							db,
+							"users",
+							user.uid
+						)
+					);
+					if (userDoc.exists()) {
+						const userData =
+							userDoc.data();
+						setDisplayName(
+							userData.displayName ||
+								""
+						);
+						setPhotoURL(
+							userData.photoURL ||
+								""
+						);
+						setStreet(
+							userData
+								.address
+								?.street ||
+								""
+						);
+						setCity(
+							userData
+								.address
+								?.city ||
+								""
+						);
+						setZipCode(
+							userData
+								.address
+								?.zipCode ||
+								""
+						);
+					}
+
+					// Pobierz dane o grach użytkownika
+					const gamesDoc = await getDoc(
+						doc(
+							db,
+							"games",
+							user.uid
+						)
+					);
+					if (gamesDoc.exists()) {
+						const gamesData =
+							gamesDoc.data();
+						setTotalGames(
+							gamesData.totalGames ||
+								0
+						);
+						setWins(
+							gamesData.wins ||
+								0
+						);
+						setLosses(
+							gamesData.losses ||
+								0
+						);
+						setDraws(
+							gamesData.draws ||
+								0
+						);
+					}
+				} catch (err) {
+					console.error(
+						"Błąd podczas pobierania danych:",
+						err
+					);
+				}
+			}
+		};
+		fetchData();
+	}, [user]);
 
 	const onSubmit = async (e) => {
 		e.preventDefault();
@@ -23,13 +113,28 @@ export default function ProfileForm() {
 				photoURL,
 			});
 
-			// Zapisanie danych w Firestore
+			// Zapisanie danych użytkownika w Firestore
 			await setDoc(doc(db, "users", user.uid), {
 				displayName,
 				photoURL,
+				address: {
+					street,
+					city,
+					zipCode,
+				},
 			});
 
-			console.log("Profile updated.");
+			// Zapisanie danych o grach w Firestore
+			await setDoc(doc(db, "games", user.uid), {
+				totalGames,
+				wins,
+				losses,
+				draws,
+			});
+
+			console.log(
+				"Profile and game data updated in Firestore."
+			);
 		} catch (err) {
 			setError(err.message);
 		}
@@ -39,13 +144,12 @@ export default function ProfileForm() {
 
 	return (
 		<div className="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
-			{/* Wyświetlanie zdjęcia profilowego */}
 			<div className="flex justify-center mb-6">
 				<img
 					src={
 						photoURL ||
 						"https://www.example.com/default-profile-pic.png"
-					} // Możesz podać domyślny URL zdjęcia
+					}
 					alt="Profile Picture"
 					className="w-24 h-24 rounded-full object-cover"
 				/>
@@ -55,6 +159,7 @@ export default function ProfileForm() {
 				Edytuj profil
 			</h2>
 			<form onSubmit={onSubmit} className="space-y-4">
+				{/* Dane użytkownika */}
 				<div>
 					<label
 						htmlFor="displayName"
@@ -65,7 +170,6 @@ export default function ProfileForm() {
 					<input
 						type="text"
 						id="displayName"
-						placeholder="Wpisz nazwę użytkownika"
 						value={displayName}
 						onChange={(e) =>
 							setDisplayName(
@@ -74,26 +178,9 @@ export default function ProfileForm() {
 									.value
 							)
 						}
-						className="mt-2 p-3 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+						className="mt-2 p-3 block w-full border rounded-md"
 					/>
 				</div>
-
-				<div>
-					<label
-						htmlFor="email"
-						className="block text-sm font-medium text-gray-700"
-					>
-						Email
-					</label>
-					<input
-						type="email"
-						id="email"
-						value={user.email}
-						readOnly
-						className="mt-2 p-3 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-					/>
-				</div>
-
 				<div>
 					<label
 						htmlFor="photoURL"
@@ -105,7 +192,6 @@ export default function ProfileForm() {
 					<input
 						type="url"
 						id="photoURL"
-						placeholder="Wpisz URL do zdjęcia profilowego"
 						value={photoURL}
 						onChange={(e) =>
 							setPhotoURL(
@@ -114,24 +200,86 @@ export default function ProfileForm() {
 									.value
 							)
 						}
-						className="mt-2 p-3 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+						className="mt-2 p-3 block w-full border rounded-md"
+					/>
+				</div>
+				<div>
+					<label
+						htmlFor="street"
+						className="block text-sm font-medium text-gray-700"
+					>
+						Ulica
+					</label>
+					<input
+						type="text"
+						id="street"
+						value={street}
+						onChange={(e) =>
+							setStreet(
+								e
+									.target
+									.value
+							)
+						}
+						className="mt-2 p-3 block w-full border rounded-md"
+					/>
+				</div>
+				<div>
+					<label
+						htmlFor="city"
+						className="block text-sm font-medium text-gray-700"
+					>
+						Miasto
+					</label>
+					<input
+						type="text"
+						id="city"
+						value={city}
+						onChange={(e) =>
+							setCity(
+								e
+									.target
+									.value
+							)
+						}
+						className="mt-2 p-3 block w-full border rounded-md"
+					/>
+				</div>
+				<div>
+					<label
+						htmlFor="zipCode"
+						className="block text-sm font-medium text-gray-700"
+					>
+						Kod pocztowy
+					</label>
+					<input
+						type="text"
+						id="zipCode"
+						value={zipCode}
+						onChange={(e) =>
+							setZipCode(
+								e
+									.target
+									.value
+							)
+						}
+						className="mt-2 p-3 block w-full border rounded-md"
 					/>
 				</div>
 
-				<div className="flex justify-center space-x-4">
-					<button
-						type="submit"
-						className="w-full py-3 px-6 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-					>
-						Zaktualizuj profil
-					</button>
-				</div>
+				<button
+					type="submit"
+					className="w-full py-3 px-6 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700"
+				>
+					Zaktualizuj dane
+				</button>
 				{error && (
 					<p className="text-red-600 text-center">
 						{error}
 					</p>
 				)}
 			</form>
+			<Footer />
 		</div>
 	);
 }
