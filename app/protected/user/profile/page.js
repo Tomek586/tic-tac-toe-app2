@@ -6,9 +6,12 @@ import { useState, useEffect } from "react";
 import { db } from "@/app/lib/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import Footer from "@/app/components/Footer";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 export default function ProfileForm() {
 	const { user } = useAuth();
+	const router = useRouter(); // Inicjalizacja routera
+
 	const [displayName, setDisplayName] = useState(
 		user?.displayName || ""
 	);
@@ -21,6 +24,13 @@ export default function ProfileForm() {
 	const [losses, setLosses] = useState(0);
 	const [draws, setDraws] = useState(0);
 	const [error, setError] = useState("");
+
+	// Sprawdzenie, czy użytkownik jest zalogowany
+	useEffect(() => {
+		if (!user) {
+			router.push("/public/user/signin"); // Przekierowanie na stronę logowania
+		}
+	}, [user, router]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -140,6 +150,7 @@ export default function ProfileForm() {
 		}
 	};
 
+	// Zwróć pusty element, gdy użytkownik jest niezalogowany
 	if (!user) return null;
 
 	return (
@@ -159,7 +170,6 @@ export default function ProfileForm() {
 				Edytuj profil
 			</h2>
 			<form onSubmit={onSubmit} className="space-y-4">
-				{/* Dane użytkownika */}
 				<div>
 					<label
 						htmlFor="displayName"

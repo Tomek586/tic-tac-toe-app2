@@ -46,6 +46,7 @@ export default function SignInPage() {
 							Email
 						</label>
 						<input
+							name="username"
 							type="email"
 							className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
 							value={
@@ -68,6 +69,7 @@ export default function SignInPage() {
 							Password
 						</label>
 						<input
+							name="password"
 							type="password"
 							className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
 							value={

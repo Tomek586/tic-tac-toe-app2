@@ -18,7 +18,7 @@ const App = () => {
 
 	return (
 		<div className="flex flex-col min-h-screen">
-			<div className="flex-grow flex flex-col items-center justify-center bg-gray-100 py-10">
+			<div className="flex-grow flex flex-col items-center justify-center bg-gray-100 py-10 ">
 				<img
 					src="https://media.printables.com/media/prints/796066/images/6164601_ae4ebef0-728a-4901-bc69-a4b18e5f64cf_20f0d103-48ce-46d8-9ffd-e1fde8e033a7/tic_tac_toe_v2.png"
 					alt="Tic Tac Toe"
