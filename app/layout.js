@@ -30,7 +30,9 @@ function MainLayout({ children }) {
 					{/* Header */}
 					<div className="flex items-center justify-center h-16 border-b border-gray-700">
 						<h1 className="text-xl font-bold">
-							My App
+							Tic Tac
+							Toe Game
+							🕹️
 						</h1>
 					</div>
 

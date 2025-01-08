@@ -159,7 +159,7 @@ export default function ProfileForm() {
 				<img
 					src={
 						photoURL ||
-						"https://www.example.com/default-profile-pic.png"
+						"https://cdn-icons-png.flaticon.com/512/266/266033.png"
 					}
 					alt="Profile Picture"
 					className="w-24 h-24 rounded-full object-cover"
