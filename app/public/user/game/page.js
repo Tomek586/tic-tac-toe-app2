@@ -229,6 +229,7 @@ const TicTacToe = () => {
 
 			if (userData && userData.games) {
 				if (winner === "Remis") {
+					// Jeśli remis, zwiększamy tylko liczbę remisów
 					await updateDoc(userRef, {
 						"games.Draws":
 							increment(
@@ -239,20 +240,23 @@ const TicTacToe = () => {
 								1
 							),
 					});
-				} else {
+				} else if (winner === "X") {
+					// Jeśli X wygrał, gracz wygrywa (ponieważ zawsze jest X)
 					await updateDoc(userRef, {
 						"games.Wins": increment(
-							winner ===
-								playerSymbol
-								? 1
-								: 0
+							1
 						),
+						"games.TotalGames":
+							increment(
+								1
+							),
+					});
+				} else if (winner === "O") {
+					// Jeśli O wygrał, komputer wygrywa, gracz przegrywa
+					await updateDoc(userRef, {
 						"games.Losses":
 							increment(
-								winner !==
-									playerSymbol
-									? 1
-									: 0
+								1
 							),
 						"games.TotalGames":
 							increment(
@@ -261,18 +265,19 @@ const TicTacToe = () => {
 					});
 				}
 			} else {
+				// Jeśli nie ma jeszcze danych użytkownika, tworzymy nowy rekord
 				await setDoc(
 					userRef,
 					{
 						games: {
 							Wins:
 								winner ===
-								playerSymbol
+								"X"
 									? 1
 									: 0,
 							Losses:
-								winner !==
-								playerSymbol
+								winner ===
+								"O"
 									? 1
 									: 0,
 							Draws:
